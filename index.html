@@ -61,12 +61,19 @@
       font-weight: 700;
       color: var(--navy);
       margin-bottom: 6px;
+      opacity: 0;
+      transform: translateX(-12px);
+      animation: fadeInLeft 0.8s ease-out forwards;
     }
 
     .hero-subtitle {
       font-size: 14px;
       color: #475569;
       margin-bottom: 20px;
+      opacity: 0;
+      transform: translateX(-12px);
+      animation: fadeInLeft 0.8s ease-out forwards;
+      animation-delay: 0.2s;
     }
 
     .layout {
@@ -85,6 +92,7 @@
       padding: 20px 22px;
       box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
       border: 1px solid rgba(148, 163, 184, 0.35);
+      animation: floatUpDown 4.2s ease-in-out infinite;
     }
 
     .form-title {
@@ -133,11 +141,12 @@
         background 0.15s ease;
     }
 
+    /* Glow on focus */
     .field select:focus,
     .field input:focus,
     .field textarea:focus {
       border-color: var(--accent-blue);
-      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.22);
+      box-shadow: 0 0 0 5px rgba(56, 189, 248, 0.25);
       background: #ffffff;
     }
 
@@ -174,6 +183,8 @@
       cursor: pointer;
       box-shadow: 0 10px 25px rgba(37, 99, 235, 0.55);
       transition: transform 0.1s ease, box-shadow 0.1s ease;
+      position: relative;
+      overflow: hidden;
     }
 
     .submit-btn:hover {
@@ -183,6 +194,19 @@
 
     .submit-btn span.icon {
       font-size: 16px;
+    }
+
+    /* Pulse-wave call-to-action on submit button */
+    .submit-btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(circle,
+        rgba(255,255,255,0.38) 0%,
+        rgba(255,255,255,0) 65%);
+      opacity: 0;
+      animation: pulseWave 7s ease-in-out infinite;
     }
 
     /* Right: Partner bubbles */
@@ -206,17 +230,20 @@
     }
 
     .bubble-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
+      position: relative;
+      min-height: 320px;
+      border-radius: 20px;
+      padding: 6px;
+      background: radial-gradient(circle at top, rgba(148, 163, 184, 0.15), transparent),
+                  rgba(255, 255, 255, 0.45);
+      overflow: hidden;
     }
 
     .partner-bubble {
-      flex: 0 0 120px;
-      max-width: 140px;
+      position: absolute;
+      width: 120px;
       height: 120px;
       border-radius: 999px;
-      background: var(--light-blue);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -225,7 +252,6 @@
       padding: 10px;
       box-shadow: 0 10px 24px rgba(15, 23, 42, 0.25);
       font-size: 12px;
-      color: var(--dark-blue);
     }
 
     .partner-name {
@@ -235,14 +261,12 @@
 
     .partner-years {
       font-size: 11px;
-      color: #0f172a;
-      opacity: 0.8;
+      opacity: 0.9;
     }
 
     .partner-type {
       font-size: 10px;
-      color: #0f172a;
-      opacity: 0.7;
+      opacity: 0.75;
       margin-top: 2px;
     }
 
@@ -263,6 +287,51 @@
     .c14 { background: #22c6b8; color: #022c22; }
     .c15 { background: #2563eb; color: #eff6ff; }
 
+    /* Bubble pop + cycle animation */
+    .bubble-anim {
+      animation: bubble-cycle 3.2s ease-in-out forwards;
+    }
+
+    /* Keyframes */
+    @keyframes bubble-cycle {
+      0% {
+        transform: translate(-50%, -50%) scale(0.2);
+        opacity: 0;
+      }
+      10% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+      70% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+      }
+    }
+
+    @keyframes fadeInLeft {
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes floatUpDown {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+      100% { transform: translateY(0); }
+    }
+
+    @keyframes pulseWave {
+      0%, 75% { opacity: 0; transform: scale(0.7); }
+      78% { opacity: 1; transform: scale(1); }
+      90% { opacity: 0; transform: scale(1.25); }
+      100% { opacity: 0; }
+    }
+
     /* Responsive */
     @media (max-width: 900px) {
       .layout {
@@ -272,10 +341,8 @@
       .partners-panel {
         max-width: 100%;
       }
-      .partner-bubble {
-        flex: 0 0 calc(33.33% - 10px);
-        max-width: none;
-        height: 110px;
+      .bubble-grid {
+        min-height: 260px;
       }
     }
 
@@ -289,8 +356,8 @@
       .hero-title {
         font-size: 22px;
       }
-      .partner-bubble {
-        flex: 0 0 calc(50% - 8px);
+      .bubble-grid {
+        min-height: 220px;
       }
     }
   </style>
@@ -390,7 +457,7 @@
         </form>
       </section>
 
-      <!-- RIGHT: PARTNER BUBBLES -->
+      <!-- RIGHT: PARTNER BUBBLES (animated) -->
       <section class="partners-panel">
         <h2 class="partners-title">Our trusted retail & platform partners</h2>
         <p class="partners-caption">
@@ -398,99 +465,97 @@
           closer to you.
         </p>
 
-        <div class="bubble-grid">
-          <div class="partner-bubble c1">
-            <div class="partner-name">Apollo Pharmacy</div>
-            <div class="partner-years">(5 years partnership)</div>
-            <div class="partner-type">Offline partner</div>
-          </div>
-
-          <div class="partner-bubble c2">
-            <div class="partner-name">Netmeds</div>
-            <div class="partner-years">(4 years partnership)</div>
-            <div class="partner-type">Online pharmacy</div>
-          </div>
-
-          <div class="partner-bubble c3">
-            <div class="partner-name">PharmEasy</div>
-            <div class="partner-years">(3 years partnership)</div>
-            <div class="partner-type">Online pharmacy</div>
-          </div>
-
-          <div class="partner-bubble c4">
-            <div class="partner-name">Tata 1mg</div>
-            <div class="partner-years">(2 years partnership)</div>
-            <div class="partner-type">Online pharmacy</div>
-          </div>
-
-          <div class="partner-bubble c5">
-            <div class="partner-name">Wellness Forever</div>
-            <div class="partner-years">(5 years partnership)</div>
-            <div class="partner-type">Offline partner</div>
-          </div>
-
-          <div class="partner-bubble c6">
-            <div class="partner-name">MedPlus</div>
-            <div class="partner-years">(4 years partnership)</div>
-            <div class="partner-type">Offline partner</div>
-          </div>
-
-          <div class="partner-bubble c7">
-            <div class="partner-name">Health &amp; Glow</div>
-            <div class="partner-years">(4 years partnership)</div>
-            <div class="partner-type">Beauty retail</div>
-          </div>
-
-          <div class="partner-bubble c8">
-            <div class="partner-name">Amazon</div>
-            <div class="partner-years">(5 years partnership)</div>
-            <div class="partner-type">Online partner</div>
-          </div>
-
-          <div class="partner-bubble c9">
-            <div class="partner-name">Flipkart</div>
-            <div class="partner-years">(4 years partnership)</div>
-            <div class="partner-type">Online partner</div>
-          </div>
-
-          <div class="partner-bubble c10">
-            <div class="partner-name">Nykaa</div>
-            <div class="partner-years">(5 years partnership)</div>
-            <div class="partner-type">Beauty platform</div>
-          </div>
-
-          <div class="partner-bubble c11">
-            <div class="partner-name">Meesho</div>
-            <div class="partner-years">(2 years partnership)</div>
-            <div class="partner-type">Online partner</div>
-          </div>
-
-          <div class="partner-bubble c12">
-            <div class="partner-name">BigBasket</div>
-            <div class="partner-years">(3 years partnership)</div>
-            <div class="partner-type">Online grocery</div>
-          </div>
-
-          <div class="partner-bubble c13">
-            <div class="partner-name">Reliance Smart</div>
-            <div class="partner-years">(1 year partnership)</div>
-            <div class="partner-type">Offline retail</div>
-          </div>
-
-          <div class="partner-bubble c14">
-            <div class="partner-name">Local Care Chemists</div>
-            <div class="partner-years">(2 years partnership)</div>
-            <div class="partner-type">Neighbourhood stores</div>
-          </div>
-
-          <div class="partner-bubble c15">
-            <div class="partner-name">City Wellness Hub</div>
-            <div class="partner-years">(3 years partnership)</div>
-            <div class="partner-type">Multi-brand retail</div>
-          </div>
+        <div class="bubble-grid" id="bubbleGrid">
+          <!-- Bubbles will be injected here by JavaScript -->
         </div>
       </section>
     </div>
   </main>
+
+  <script>
+    // Partner data (demo/sample only)
+    const partners = [
+      { name: "Apollo Pharmacy", years: 5, type: "Offline partner" },
+      { name: "Netmeds", years: 4, type: "Online pharmacy" },
+      { name: "PharmEasy", years: 3, type: "Online pharmacy" },
+      { name: "Tata 1mg", years: 2, type: "Online pharmacy" },
+      { name: "Wellness Forever", years: 5, type: "Offline partner" },
+      { name: "MedPlus", years: 4, type: "Offline partner" },
+      { name: "Health & Glow", years: 4, type: "Beauty retail" },
+      { name: "Amazon", years: 5, type: "Online partner" },
+      { name: "Flipkart", years: 4, type: "Online partner" },
+      { name: "Nykaa", years: 5, type: "Beauty platform" },
+      { name: "Meesho", years: 2, type: "Online partner" },
+      { name: "BigBasket", years: 3, type: "Online grocery" },
+      { name: "Reliance Smart", years: 1, type: "Offline retail" },
+      { name: "Local Care Chemists", years: 2, type: "Neighbourhood stores" },
+      { name: "City Wellness Hub", years: 3, type: "Multi-brand retail" },
+    ];
+
+    const colorClasses = [
+      "c1","c2","c3","c4","c5",
+      "c6","c7","c8","c9","c10",
+      "c11","c12","c13","c14","c15"
+    ];
+
+    const visibleCount = 8;         // how many bubbles at a time
+    const cycleDuration = 3200;     // must match CSS animation duration (ms)
+    let startIndex = 0;
+
+    function shuffle(array) {
+      // Fisher-Yates shuffle
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function renderBubbles() {
+      const container = document.getElementById("bubbleGrid");
+      if (!container) return;
+
+      container.innerHTML = "";
+
+      // Shuffle order at each full loop for freshness
+      if (startIndex === 0) {
+        shuffle(partners);
+      }
+
+      const subset = [];
+      for (let i = 0; i < visibleCount; i++) {
+        const idx = (startIndex + i) % partners.length;
+        subset.push(partners[idx]);
+      }
+
+      subset.forEach((partner, idx) => {
+        const bubble = document.createElement("div");
+        const colorClass = colorClasses[idx % colorClasses.length];
+        bubble.className = `partner-bubble ${colorClass} bubble-anim`;
+
+        // Random position inside the bubbleGrid (keep some padding)
+        const left = 15 + Math.random() * 70;  // 15% to 85%
+        const top = 15 + Math.random() * 70;   // 15% to 85%
+        bubble.style.left = left + "%";
+        bubble.style.top = top + "%";
+        // initial transform handled in animation
+
+        bubble.innerHTML = `
+          <div class="partner-name">${partner.name}</div>
+          <div class="partner-years">(${partner.years} years partnership)</div>
+          <div class="partner-type">${partner.type}</div>
+        `;
+
+        container.appendChild(bubble);
+      });
+
+      // Move starting index for next cycle
+      startIndex = (startIndex + visibleCount) % partners.length;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderBubbles();
+      setInterval(renderBubbles, cycleDuration);
+    });
+  </script>
 </body>
 </html>
